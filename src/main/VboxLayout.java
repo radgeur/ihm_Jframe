@@ -52,10 +52,10 @@ public class VboxLayout implements LayoutManager {
         for(int i = 0; i< nComps; i++){
         	Component comp = parent.getComponent(i);
         	if(comp.isVisible()) {
-	        	preferredWidth = comp.getWidth();
-	        	preferredHeight = comp.getHeight() + vgap;
-	        	minWidth = comp.getWidth();
-	        	minHeight = comp.getHeight();
+	        	preferredWidth += comp.getWidth();
+	        	preferredHeight += comp.getHeight() + vgap;
+	        	minWidth += comp.getWidth();
+	        	minHeight += comp.getHeight();
         	}
         }
     }
@@ -64,12 +64,13 @@ public class VboxLayout implements LayoutManager {
     /* Required by LayoutManager. */
     public Dimension preferredLayoutSize(Container parent) {
         Dimension dim = new Dimension(0, 0);
+        setSizes(parent);
  
 	// Retourne les dimensions preferees du conteneur en utilisant
 	// preferredWidth et preferredHeight ainsi que les dimensions du bord
 	// du conteneur (Insets)
         Insets insets = parent.getInsets();
-        dim.setSize(preferredWidth + insets.left + insets.right, preferredHeight + insets.top + insets.bottom);
+        dim.setSize(preferredWidth + insets.left + insets.right, preferredHeight + insets.top + insets.bottom + vgap);
 
         return dim;
     }
@@ -81,7 +82,7 @@ public class VboxLayout implements LayoutManager {
 	// minWidth et minHeight ainsi que les dimensions du bord
 	// du conteneur (Insets)
         Insets insets = parent.getInsets();
-        dim.setSize(parent.getMinimumSize().getWidth() + insets.left + insets.right, parent.getMinimumSize().getHeight() + insets.top + insets.bottom);
+        dim.setSize(minWidth + insets.left + insets.right, minHeight + insets.top + insets.bottom + vgap);
 
         return dim;
     }
@@ -98,12 +99,15 @@ public class VboxLayout implements LayoutManager {
 	// Pour tous les composants visibles, definir la position et
 	// la taille de chacun des composants en utilisant la methode
 	// setBounds
+    	//setSizes(parent);
     	int nbComponent = parent.getComponentCount();
+    	int maxHeight = 0;
     	for(int i = 1; i<=nbComponent;i++){
     		Component comp = parent.getComponent(i-1);
     		if(comp.isVisible()){
     			Dimension dim = comp.getPreferredSize();
-        		parent.getComponent(i -1).setBounds(dim.width, dim.height * i,  dim.width, dim.height * i);
+        		comp.setBounds(dim.width, maxHeight + vgap,  dim.width, dim.height);
+        		maxHeight = comp.getY() + comp.getHeight();
     		}
     	}
  
