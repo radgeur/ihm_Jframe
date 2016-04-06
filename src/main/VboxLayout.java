@@ -52,9 +52,11 @@ public class VboxLayout implements LayoutManager {
         for(int i = 0; i< nComps; i++){
         	Component comp = parent.getComponent(i);
         	if(comp.isVisible()) {
-	        	preferredWidth += comp.getWidth();
+        		if (comp.getWidth() > preferredWidth)
+        			preferredWidth = comp.getWidth() + vgap * 2;
 	        	preferredHeight += comp.getHeight() + vgap;
-	        	minWidth += comp.getWidth();
+	        	if (comp.getWidth() > minWidth)
+	        		minWidth += comp.getWidth();
 	        	minHeight += comp.getHeight();
         	}
         }
@@ -106,7 +108,7 @@ public class VboxLayout implements LayoutManager {
     		Component comp = parent.getComponent(i-1);
     		if(comp.isVisible()){
     			Dimension dim = comp.getPreferredSize();
-        		comp.setBounds(dim.width, maxHeight + vgap,  dim.width, dim.height);
+        		comp.setBounds((preferredWidth - dim.width)/2, maxHeight + vgap,  dim.width, dim.height);
         		maxHeight = comp.getY() + comp.getHeight();
     		}
     	}
